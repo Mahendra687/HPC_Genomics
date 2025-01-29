@@ -13,7 +13,7 @@ This is a SLURM batch script to run FastQC on multiple samples using an array jo
 - **Memory per task**: 2GB
 - **Max runtime**: 30 minutes
 
-## SLURM Batch Script
+## `SLURM` Batch Script
 
 ```bash
 #!/bin/bash
@@ -41,11 +41,104 @@ mkdir -p results/fastqc_results_Jan2025
 
 # Run FastQC on the corresponding sample
 fastqc dataset/${samplename}.fastq --outdir=results/fastqc_results_Jan2025
+```
+### Write a script to run `FastQC` from the Project directory:
+```bash
+#!/bin/bash
+#SBATCH --job-name=fastqc_analysis         # Job name
+#SBATCH --output=output_%j.txt             # Standard output log (%j = Job ID)
+#SBATCH --error=error_%j.txt               # Standard error log
+#SBATCH --partition=gpu_scholar            # Partition/queue name
+#SBATCH --nodes=1                          # Number of nodes
+#SBATCH --ntasks=1                         # Number of tasks
+#SBATCH --cpus-per-task=4                  # CPUs per task
+#SBATCH --mem=4G                           # Memory per node
+#SBATCH --time=01:00:00                    # Time limit
+#SBATCH --mail-user=user@email.com         # User email for notifications
+#SBATCH --mail-type=END,FAIL               # Notify on job end/fail
 
+# Load the FastQC module
+module load FastQCv0.12.1
+
+# Define directories
+INPUT_DIR=/dgxb_home/se24plsc006/project/dataset
+OUTPUT_DIR=/dgxb_home/se24plsc006/project/results/output
+
+# Create the output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
+# Run FastQC on the input files
+echo "Running FastQC on input files from $INPUT_DIR..."
+fastqc -o $OUTPUT_DIR $INPUT_DIR/SRR32066794_1.fastq $INPUT_DIR/SRR32066794_2.fastq
+
+# Verify that output files are created
+if [[ -f "$OUTPUT_DIR/SRR32066794_1_fastqc.zip" && -f "$OUTPUT_DIR/SRR32066794_2_fastqc.zip" ]]; then
+  echo "FastQC analysis completed successfully. Output files are located in $OUTPUT_DIR."
+else
+  echo "Error: FastQC output files not found in $OUTPUT_DIR."
+  exit 1
+fi
 ```
 
-```bash
+### Write a script to run `FastQC` from input directory:
 
+```bash
+#!/bin/bash
+#SBATCH --job-name=fastqc_analysis         # Job name
+#SBATCH --output=output_%j.txt             # Standard output log (%j = Job ID)
+#SBATCH --error=error_%j.txt               # Standard error log
+#SBATCH --partition=gpu_scholar            # Partition/queue name
+#SBATCH --nodes=1                          # Number of nodes
+#SBATCH --ntasks=1                         # Number of tasks
+#SBATCH --cpus-per-task=4                  # CPUs per task
+#SBATCH --mem=4G                           # Memory per node
+#SBATCH --time=01:00:00                    # Time limit
+#SBATCH --mail-user=user@email.com         # User email for notifications
+#SBATCH --mail-type=END,FAIL               # Notify on job end/fail
+
+# Load the FastQC module
+module load FastQCv0.12.1
+
+# Define directories
+INPUT_DIR=/dgxb_home/se24plsc006/dataset
+OUTPUT_DIR=/dgxb_home/se24plsc006/output
+
+# Create the output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
+# Run FastQC on the input files
+echo "Running FastQC on input files from $INPUT_DIR..."
+fastqc -o $OUTPUT_DIR $INPUT_DIR/SRR32066794_1.fastq $INPUT_DIR/SRR32066794_2.fastq
+
+# Verify that output files are created
+if [[ -f "$OUTPUT_DIR/SRR32066794_1_fastqc.zip" && -f "$OUTPUT_DIR/SRR32066794_2_fastqc.zip" ]]; then
+  echo "FastQC analysis completed successfully. Output files are located in $OUTPUT_DIR."
+else
+  echo "Error: FastQC output files not found in $OUTPUT_DIR."
+  exit 1
+fi
+```
+### Write a script to run `FastQC` -help:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=fastqc_help             # Job name
+#SBATCH --output=fastqc_help_output.txt    # Output file
+#SBATCH --error=fastqc_help_error.txt      # Error file
+#SBATCH --partition=cpu_scholar           # Partition name
+#SBATCH --nodes=1                         # Number of nodes
+#SBATCH --ntasks=1                        # Number of tasks
+#SBATCH --time=00:05:00                   # Time limit
+
+# Load the required module
+module load fastqc
+
+# Print the help information for FastQC
+fastqc --help
+```
+
+### Job Submission:
+```bash
 #To submit the job as follows:
 sbatch script.sh
 #And verify job status using:
