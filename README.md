@@ -146,6 +146,11 @@ cat trimmomatic_job_14331.out
 ├── script/
 │   └── trimmomatic_array_job.sh
 ```
+### Getting information about Trimmomatic directory
+```bash
+module show Trimmomatic-0.39
+find /dgxa_home/shared_software/Trimmomatic-0.39 -name "*.jar"
+```
 ### FastQC Array Job Script
 
 This is a SLURM batch script to run FastQC on multiple samples using an array job.
