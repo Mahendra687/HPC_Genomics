@@ -127,12 +127,25 @@ chmod +x tri.sh
 ```bash
 sbatch trimmomatic_job.sh
 ```
-
-
-
-
-
-
+### Check Job Completion/Failure Logs Since the jobs aren't listed, they likely completed or failed. Check their output and error logs:
+```bash
+ls -l /dgxb_home/se24plsc006/project/results/trim_ou
+cat trimmomatic_job_14331.err
+cat trimmomatic_job_14331.out
+```
+### Directory Structure
+```bash
+/dgxb_home/se24plsc006/project/
+├── dataset/
+│   ├── SRR32066794_1.fastq
+│   ├── SRR32066794_2.fastq
+├── results/
+│   └── trim_out/
+├── samples/
+│   └── samples.txt
+├── script/
+│   └── trimmomatic_array_job.sh
+```
 ### FastQC Array Job Script
 
 This is a SLURM batch script to run FastQC on multiple samples using an array job.
