@@ -1,4 +1,139 @@
-# FastQC Array Job Script
+### `SLURM` Array Job to Run Trimmomatic-0.39
+```bash
+#!/bin/bash
+#SBATCH --job-name=trimmomatic_array_job  # Job name
+#SBATCH --output=trimmomatic_job_%A_%a.out  # Output file (%A = array job ID, %a = task ID)
+#SBATCH --error=trimmomatic_job_%A_%a.err   # Error file
+#SBATCH --partition=gpu_scholar             # Partition/queue
+#SBATCH --array=0-1                         # Array range (adjust based on the number of samples)
+#SBATCH --ntasks=1                          # Number of tasks per array job
+#SBATCH --cpus-per-task=2                   # CPUs per task
+#SBATCH --mem=2G                            # Memory per task
+#SBATCH --time=01:00:00                     # Max runtime (1 hour)
+#SBATCH --mail-type=END,FAIL                # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=mahendras948@gmail.com  # Replace with your email
+
+# Load the Trimmomatic module
+module load Trimmomatic-0.39
+
+# Define the path to the Trimmomatic JAR file
+TRIMMOMATIC_JAR="/dgxa_home/shared_software/Trimmomatic-0.39/trimmomatic-0.39.jar"
+
+# Define input and output directories
+INPUT_DIR="/dgxb_home/se24plsc006/project/dataset"
+OUTPUT_DIR="/dgxb_home/se24plsc006/project/results/trim_out"
+
+# Create the output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
+# Extract sample name from the text file samples.txt
+SAMPLENAME=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1)) p" /dgxb_home/se24plsc006/project/samples/samples.txt)
+
+# Define input files
+INPUT_1="${INPUT_DIR}/${SAMPLENAME}_1.fastq"
+INPUT_2="${INPUT_DIR}/${SAMPLENAME}_2.fastq"
+
+# Define output files
+OUTPUT_1="${OUTPUT_DIR}/${SAMPLENAME}_1_trimmed.fastq"
+OUTPUT_2="${OUTPUT_DIR}/${SAMPLENAME}_2_trimmed.fastq"
+OUTPUT_1_UNPAIRED="${OUTPUT_DIR}/${SAMPLENAME}_1_unpaired.fastq"
+OUTPUT_2_UNPAIRED="${OUTPUT_DIR}/${SAMPLENAME}_2_unpaired.fastq"
+
+# Run Trimmomatic
+java -jar $TRIMMOMATIC_JAR PE \
+    -threads $SLURM_CPUS_PER_TASK \
+    $INPUT_1 $INPUT_2 \
+    $OUTPUT_1 $OUTPUT_1_UNPAIRED \
+    $OUTPUT_2 $OUTPUT_2_UNPAIRED \
+    ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
+    LEADING:3 \
+    TRAILING:3 \
+    SLIDINGWINDOW:4:15 \
+    MINLEN:36
+
+# Check if the job was successful
+if [ $? -eq 0 ]; then
+    echo "Trimmomatic completed successfully for $SAMPLENAME."
+else
+    echo "Trimmomatic failed for $SAMPLENAME."
+    exit 1
+fi
+
+```
+
+### `SLURM` Script to Run Trimmomatic-0.39
+```bash
+#!/bin/bash
+#SBATCH --job-name=trimmomatic_job       # Job name
+#SBATCH --output=trimmomatic_job_%j.out  # Standard output and error log
+#SBATCH --error=trimmomatic_job_%j.err   # Error log
+#SBATCH --ntasks=1                       # Number of tasks (processes)
+#SBATCH --cpus-per-task=2                # Number of CPU cores per task
+#SBATCH --mem=2G                         # Memory per node
+#SBATCH --time=01:00:00                  # Time limit hrs:min:sec
+#SBATCH --partition=gpu_scholar       # Replace with your partition name
+#SBATCH --mail-type=END,FAIL             # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=mahendras948@gmail.com # Replace with your email
+
+# Load the Trimmomatic module
+module load Trimmomatic-0.39
+
+# Define the path to the Trimmomatic JAR file
+TRIMMOMATIC_JAR="/dgxa_home/shared_software/Trimmomatic-0.39/trimmomatic-0.39.jar"
+
+# Define input and output directories
+INPUT_DIR="/dgxb_home/se24plsc006/project/dataset"
+OUTPUT_DIR="/dgxb_home/se24plsc006/project/results/trim_out"
+
+# Create the output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
+# Define input files
+INPUT_1="$INPUT_DIR/SRR32066794_1.fastq"
+INPUT_2="$INPUT_DIR/SRR32066794_2.fastq"
+
+# Define output files
+OUTPUT_1="$OUTPUT_DIR/SRR32066794_1_trimmed.fastq"
+OUTPUT_2="$OUTPUT_DIR/SRR32066794_2_trimmed.fastq"
+OUTPUT_1_UNPAIRED="$OUTPUT_DIR/SRR32066794_1_unpaired.fastq"
+OUTPUT_2_UNPAIRED="$OUTPUT_DIR/SRR32066794_2_unpaired.fastq"
+
+# Run Trimmomatic
+java -jar $TRIMMOMATIC_JAR PE \
+    -threads 4 \
+    $INPUT_1 $INPUT_2 \
+    $OUTPUT_1 $OUTPUT_1_UNPAIRED \
+    $OUTPUT_2 $OUTPUT_2_UNPAIRED \
+    ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
+    LEADING:3 \
+    TRAILING:3 \
+    SLIDINGWINDOW:4:15 \
+    MINLEN:36
+
+# Check if the job was successful
+if [ $? -eq 0 ]; then
+    echo "Trimmomatic completed successfully."
+else
+    echo "Trimmomatic failed."
+    exit 1
+fi
+```
+### Run the Script:
+```bash
+chmod +x tri.sh
+./tri.sh
+```
+### Submit the job to SLURM:
+```bash
+sbatch trimmomatic_job.sh
+```
+
+
+
+
+
+
+### FastQC Array Job Script
 
 This is a SLURM batch script to run FastQC on multiple samples using an array job.
 
