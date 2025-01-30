@@ -129,6 +129,8 @@ sbatch trimmomatic_job.sh
 ```
 ### Check Job Completion/Failure Logs Since the jobs aren't listed, they likely completed or failed. Check their output and error logs:
 ```bash
+squeue
+squeue -u USER
 ls -l /dgxb_home/se24plsc006/project/results/trim_ou
 cat trimmomatic_job_14331.err
 cat trimmomatic_job_14331.out
