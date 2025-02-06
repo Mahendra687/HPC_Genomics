@@ -1,3 +1,25 @@
+### Installation of Micromamba, Snakemake, FastQC and MultiQC using Conda/Miniconda
+
+**Package Installation**
+
+* **`conda install micromamba -c conda-forge`**: Installs the `micromamba` package from the `conda-forge` channel using `conda`.
+* **`micromamba install -n snakemake  -c conda-forge -c bioconda snakemake-minimal`**: Installs the `snakemake-minimal` package into a new environment named `snakemake` using `micromamba`, pulling from both the `conda-forge` and `bioconda` channels.
+* **`micromamba create -n snakemake -c conda-forge -c bioconda snakemake-minimal`**: Creates a new conda environment named `snakemake` and installs the `snakemake-minimal` package using `micromamba` (this was necessary because the previous `install` command failed as the environment didn't exist).
+* **`micromamba create -n fastqc bioconda::fastqc`**: Creates a new conda environment named `fastqc` and installs the `fastqc` package from the `bioconda` channel using `micromamba`.
+* **`micromamba install multiqc -c conda-forge -c bioconda`**: Installs the `multiqc` package into the currently active environment using `micromamba`.
+
+
+**Environment Management**
+
+* **`conda activate snakemake`**:  Activates the `snakemake` conda environment. However, in this case, it seems the environment didn't exist yet.
+* **`conda activate fastqc`**:  Activates the `fastqc` conda environment (also didn't exist in this case).
+* **`micromamba activate snakemake`**: Activates the `snakemake` conda environment managed by `micromamba`.
+* **`micromamba activate fastqc`**: Activates the `fastqc` conda environment managed by `micromamba`.
+* **`conda deactivate`**: Deactivates the currently active conda environment.
+* **`eval "$(micromamba shell hook --shell bash)"`**: Initializes the current bash shell for use with `micromamba`.
+* **`micromamba shell init --shell bash --root-prefix=~/.local/share/mamba`**:  Configures `micromamba` to automatically manage environments in future bash sessions.
+* **`source ~/.bashrc`**: Reloads the `~/.bashrc` file to apply the `micromamba` initialization.
+
 ### `SLURM` Array Job to Run Trimmomatic-0.39
 ```bash
 #!/bin/bash
