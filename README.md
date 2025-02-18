@@ -1,3 +1,71 @@
+### Assignment SLURM SCRIPT
+```bash
+#!/bin/bash
+#SBATCH --job-name=RNA_Array                # Job name
+#SBATCH --output=logs_job_%A_%a.out         # Output file (%A = array job ID, %a = task ID)
+#SBATCH --error=logs_job_%A_%a.err          # Error file
+#SBATCH --partition=cpu_scholar             # Partition/queue
+#SBATCH --array=1-876                       # Array range (adjust based on the number of samples)
+#SBATCH --ntasks=1                          # Number of tasks per array job
+#SBATCH --cpus-per-task=2                   # CPUs per task
+#SBATCH --mem=8G                            # Memory per task
+#SBATCH --time=01:00:00                     # Max runtime (1 hour)
+#SBATCH --mail-type=END,FAIL                # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=mahendras948@gmail.com  # Replace with your email
+
+# Load Conda manually (fixes Conda activation issue)
+eval "$(conda shell.bash hook)"
+conda activate rna-seq
+
+# Check Conda environment
+echo "Active Conda Environment: $(conda info --envs | grep '*')"
+
+# Define directories
+DATA_DIR=~/assignment1/Mahindra/raw_data
+REF_DIR=~/assignment1/Mahindra/ref
+OUTPUT_DIR=~/assignment1/Mahindra/output
+QC_DIR=$OUTPUT_DIR/QC
+mkdir -p $OUTPUT_DIR/logs $QC_DIR
+
+# Get sample names
+SAMPLES=($(ls $DATA_DIR | awk -F'-' '{print $1}' | sort | uniq))
+SAMPLE_NAME=${SAMPLES[$SLURM_ARRAY_TASK_ID - 1]}
+
+# Define file names
+R1="$DATA_DIR/${SAMPLE_NAME}-R1.fastq.gz"
+R2="$DATA_DIR/${SAMPLE_NAME}-R2.fastq.gz"
+OUT_DIR="$OUTPUT_DIR/$SAMPLE_NAME"
+mkdir -p $OUT_DIR
+
+echo "Processing sample: $SAMPLE_NAME"
+
+# Step 1: Quality Control
+fastqc -t 4 $R1 $R2 -o $QC_DIR
+
+# Step 2: Trimming
+TRIMMED_R1="$OUT_DIR/${SAMPLE_NAME}_trimmed_R1.fastq.gz"
+TRIMMED_R2="$OUT_DIR/${SAMPLE_NAME}_trimmed_R2.fastq.gz"
+trimmomatic PE -threads 4 $R1 $R2 $TRIMMED_R1 /dev/null $TRIMMED_R2 /dev/null SLIDINGWINDOW:4:20 MINLEN:36
+
+# Step 3: Expression Quantification using Salmon
+if [[ "$SAMPLE_NAME" == GRZ_* ]]; then
+    REF="$REF_DIR/GRZ.fasta"
+else
+    REF="$REF_DIR/MZM.fasta"
+fi
+
+salmon quant -i $REF -l A -1 $TRIMMED_R1 -2 $TRIMMED_R2 -p 4 --validateMappings -o $OUT_DIR/salmon_output
+
+# Step 4: MultiQC Report (Only Runs Once at the End)
+if [[ $SLURM_ARRAY_TASK_ID -eq 1 ]]; then
+    sleep 120
+    multiqc $QC_DIR -o $OUTPUT_DIR/multiqc_report
+    echo "MultiQC report generated!"
+fi
+
+echo "Sample $SAMPLE_NAME processing complete!"
+```
+
 ### Installation of Micromamba, Snakemake, FastQC and MultiQC using Conda/Miniconda
 
 **Package Installation**
