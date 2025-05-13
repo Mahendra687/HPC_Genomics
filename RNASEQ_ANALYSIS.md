@@ -24,3 +24,11 @@ snakemake --version
 
 PERFECT:)
 ```
+Resolve Conda Channel Priority Warning
+```bash
+# Set Strict Channel Priority:
+conda config --set channel_priority strict 
+# Verify Configuration:
+conda config --show channel_priority
+# Expected output: channel_priority: strict
+```
