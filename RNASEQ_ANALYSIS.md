@@ -32,3 +32,12 @@ conda config --set channel_priority strict
 conda config --show channel_priority
 # Expected output: channel_priority: strict
 ```
+Execute the Snakefile workflow:
+```bash
+# run a dry run:
+snakemake -n
+# If all looks good, execute the workflow:
+snakemake --use-conda --cores 8
+# Clear cached environments to avoid conflicts:
+snakemake --use-conda --cores 8 --conda-cleanup-pkgs
+```
