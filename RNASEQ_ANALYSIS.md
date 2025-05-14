@@ -40,4 +40,6 @@ snakemake -n
 snakemake --use-conda --cores 8
 # Clear cached environments to avoid conflicts:
 snakemake --use-conda --cores 8 --conda-cleanup-pkgs
+snakemake --use-conda --cores 4 --rerun-incomplete --latency-wait 60
+rm -rf .snakemake/conda/139ce5889359fa4cb82ea970acf6d620_*
 ```
