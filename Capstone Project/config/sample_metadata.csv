@@ -1,0 +1,7 @@
+Sample,SRR_ID,Spots,Bases,Size_MB,Published,Instrument,Strategy,Source,Layout
+Alzheimer's whole brain,SRR087416,14720816,529.9M,362.1,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
+"Normal brain, temporal lobe",SRR085471,15256752,549.2M,372.8,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
+"Alzheimer's brain, temporal lobe",SRR085473,14227702,498M,350.2,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
+"Normal brain, frontal lobe",SRR085474,15772947,552.1M,391.0,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
+"Alzheimer's brain, frontal lobe",SRR085726,15228832,533M,377.3,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
+Normal whole brain,SRR085725,13442077,483.9M,324.0,2011-01-05,Illumina Genome Analyzer II,WGS,TRANSCRIPTOMIC,SINGLE
