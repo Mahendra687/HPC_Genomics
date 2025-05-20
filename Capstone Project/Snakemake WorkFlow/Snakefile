@@ -1,0 +1,57 @@
+# Load config
+configfile: "config/config.yml"
+
+# Dynamically load sample list from metadata CSV
+import pandas as pd
+SAMPLES = pd.read_csv("config/sample_metadata.csv")
+SAMPLE_IDS = SAMPLES["SRR_ID"].tolist()
+
+# Include only essential rules
+include: "rules/create_sample_table.smk"
+include: "rules/get_data.smk"
+include: "rules/qc_check.smk"
+include: "rules/trim_reads.smk"
+include: "rules/get_reference.smk"
+include: "rules/index_reference.smk"
+include: "rules/star_align.smk"
+include: "rules/quantification.smk"
+include: "rules/variant_calling_bcftools_pipeline.smk"
+
+# Master rule
+rule all:
+    input:
+        # Sample metadata and data
+        "config/sample_metadata.csv",
+        expand("data/{srr_id}.fastq.gz", srr_id=SAMPLE_IDS),
+
+        # Quality control
+        expand("output/fastqc/{srr_id}_fastqc.html", srr_id=SAMPLE_IDS),
+        expand("output/fastqc/{srr_id}_fastqc.zip", srr_id=SAMPLE_IDS),
+        "output/fastqc/multiqc_report.html",
+
+        # Trimmed reads
+        expand("output/trimmed/{srr_id}_trimmed.fastq.gz", srr_id=SAMPLE_IDS),
+        "output/trimmed/multiqc_report.html",
+
+        # Reference files
+        "ref/genome.fa",
+        "ref/genome.fa.fai",
+        "ref/genome.dict",
+        "ref/genome.gtf.gz",
+        "ref/star_index",
+
+        # STAR alignment outputs
+        expand("output/aligned/{srr_id}.unsorted.bam", srr_id=SAMPLE_IDS),
+        expand("output/aligned/{srr_id}.sorted.bam", srr_id=SAMPLE_IDS),
+        expand("output/aligned/{srr_id}.sorted.bam.bai", srr_id=SAMPLE_IDS),
+        expand("output/aligned/{srr_id}.rg.bam", srr_id=SAMPLE_IDS),
+        expand("output/aligned/{srr_id}.rg.bam.bai", srr_id=SAMPLE_IDS),
+
+        # Gene-level quantification
+        expand("output/counts/{srr_id}.counts.txt", srr_id=SAMPLE_IDS),
+        "output/counts/merged_counts.txt",
+
+        # BCFtools variant pipeline outputs
+        expand("output/bcftools/{srr_id}.filtered.vcf.gz", srr_id=SAMPLE_IDS),
+        expand("output/bcftools/{srr_id}.stats.txt", srr_id=SAMPLE_IDS),
+        expand("output/bcftools/{srr_id}.plots/", srr_id=SAMPLE_IDS)
