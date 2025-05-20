@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - samtools=1.18  
+  - htslib=1.18
+  - libdeflate=1.18

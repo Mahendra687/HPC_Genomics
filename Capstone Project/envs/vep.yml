@@ -1,0 +1,9 @@
+name: vep
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - ensembl-vep=105.0  # Ensure this is compatible with newer htslib
+  - htslib=1.16        # Use a newer version that may accept newer libdeflate
+  - libdeflate=1.24    # Explicitly specify a compatible version

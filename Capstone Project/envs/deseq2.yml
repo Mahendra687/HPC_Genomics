@@ -1,0 +1,21 @@
+name: deseq2
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # Core R installation
+  - r-base=4.2.3
+  
+  # Bioconductor packages
+  - bioconductor-deseq2=1.38.0
+  - bioconductor-genefilter=1.80.0
+  
+  # Tidyverse components (individual packages for better control)
+  - r-ggplot2=3.4.2
+  - r-readr=2.1.4
+  - r-dplyr=1.1.2
+  
+  # Required dependencies
+  - r-ashr=2.2.54
+  - libiconv=1.17
+  - glib=2.74.1

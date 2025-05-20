@@ -1,0 +1,7 @@
+name: snpeff_java21
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - openjdk=21.0.3
+  - snpeff=5.1d

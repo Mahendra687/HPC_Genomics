@@ -1,0 +1,14 @@
+name: bcftools
+channels:
+  - conda-forge  
+  - bioconda
+dependencies:
+  - bcftools=1.18
+  - samtools=1.18
+  - htslib=1.18
+  - libdeflate=1.18 
+  - python=3.10
+  - matplotlib
+  - pandas
+  - jinja2
+  - tectonic
