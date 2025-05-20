@@ -1,0 +1,10 @@
+rule download_reference:
+    output:
+        "ref/genome.fa"
+    shell:
+        """
+        mkdir -p ref
+        wget -O ref/genome.fa.gz https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+        gunzip -c ref/genome.fa.gz > {output}
+        rm ref/genome.fa.gz
+        """

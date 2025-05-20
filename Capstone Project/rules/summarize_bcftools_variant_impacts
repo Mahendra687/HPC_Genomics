@@ -1,0 +1,19 @@
+rule annotate_with_snpeff_p13:
+    input:
+        "output/variants_bcftools/{srr_id}.bcftools.vcf"
+    output:
+        "output/annotated_bcftools/{srr_id}.bcftools.GRCh38p13.annotated.vcf"
+    shell:
+        """
+        java -Xmx4g -jar snpEff/snpEff.jar GRCh38.p13 {input} > {output}
+        """
+
+rule filter_high_moderate_impacts_p13:
+    input:
+        "output/annotated_bcftools/{srr_id}.bcftools.GRCh38p13.annotated.vcf"
+    output:
+        "output/annotated_bcftools/{srr_id}.bcftools.GRCh38p13.filtered.vcf"
+    shell:
+        """
+        java -Xmx4g -jar snpEff/SnpSift.jar filter "(ANN[0].IMPACT = 'HIGH') | (ANN[0].IMPACT = 'MODERATE')" {input} > {output}
+        """
