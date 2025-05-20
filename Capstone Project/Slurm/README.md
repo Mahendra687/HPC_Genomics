@@ -3,7 +3,7 @@
 #SBATCH -J rna-seq
 #SBATCH -N 1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=120G
+#SBATCH --mem=70G
 #SBATCH --time=24:00:00
 #SBATCH --partition=gpu_scholar
 #SBATCH --output=logs/snakemake_run.out
